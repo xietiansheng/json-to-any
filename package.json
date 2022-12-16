@@ -1,0 +1,31 @@
+{
+  "name": "json-to-any",
+  "version": "1.0.0",
+  "description": "json转换任意语言代码",
+  "main": "./dist/index.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "npm run build && node example/code-ts.js",
+    "build": "tsc && node esbuild.config.js"
+  },
+  "keywords": [
+    "json",
+    "json-to",
+    "json-to-any"
+  ],
+  "homepage": "https://gitee.com/XieTS/json-to-any",
+  "bugs": {
+    "url": "https://gitee.com/XieTS/json-to-any/issues"
+  },
+  "author": "xietiansheng",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^18.11.15",
+    "esbuild": "^0.16.5",
+    "node": "^19.2.0",
+    "typescript": "^4.9.4"
+  }
+}
