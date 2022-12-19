@@ -1,13 +1,17 @@
-import { Property, PropertyType } from "./property";
+import { ArrayProperty, NormalProperty, ObjectProperty, Property } from "./property";
 import { Entity } from "./entity";
 
-
-type PropTransform = {
-  [K in PropertyType | "before" | "after"]?: transformCodeFn
+export interface Options {
+  before?: transformCodeEntityFn;
+  after?: transformCodeEntityFn;
+  default: (property: Property, entity: Entity) => string;
+  // 数据类型
+  array?: (property: ArrayProperty, entity: Entity) => string;
+  object?: (property: ObjectProperty, entity: Entity) => string;
+  string?: (property: NormalProperty, entity: Entity) => string;
+  boolean?: (property: NormalProperty, entity: Entity) => string;
+  number?: (property: NormalProperty, entity: Entity) => string;
+  null?: (property: NormalProperty, entity: Entity) => string;
 }
 
-export interface Options extends PropTransform {
-  default: transformCodeFn;
-}
-
-export type transformCodeFn = (options: { property?: Property, entity: Entity }) => string;
+export type transformCodeEntityFn = (entity: Entity) => string;

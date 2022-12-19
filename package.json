@@ -1,6 +1,6 @@
 {
   "name": "json-to-any",
-  "version": "1.0.0",
+  "version": "2.0.2",
   "description": "json转换任意语言代码",
   "main": "./dist/index.js",
   "files": [
@@ -8,13 +8,14 @@
     "README.md"
   ],
   "scripts": {
-    "test": "npm run build && node example/code-ts.js",
+    "test:ts": "npm run build && tsc ./example/code-ts.ts && node ./example/code-ts.js",
     "build": "tsc && node esbuild.config.js"
   },
   "keywords": [
     "json",
     "json-to",
-    "json-to-any"
+    "json-to-any",
+    "JsonToAny"
   ],
   "homepage": "https://gitee.com/XieTS/json-to-any",
   "bugs": {

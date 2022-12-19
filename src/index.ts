@@ -1,7 +1,7 @@
 import { firstChatToUpperCase, isNull, isObject } from "./utils/shared";
 import { parseJsonToProperty } from "./utils/entity";
 import { Entity } from "./type/entity";
-import { Property } from "./type/property";
+import { isArrayProperty, isNormalProperty, isObjectProperty, Property, RootProperty } from "./type/property";
 import { Options } from "./type/transform";
 
 const parseJsonToObject = (jsonCode: string): Record<any, any> => {
@@ -19,9 +19,9 @@ const parse = (jsonCode: string | object): Entity[] => {
     throw Error("The Value cannot be null.");
   }
   const target = isObject(jsonCode) ? jsonCode : parseJsonToObject(jsonCode);
-  const property = parseJsonToProperty(target);
+  const rootProperty = parseJsonToProperty(target);
   const modelEntityList: Entity[] = [];
-  const root = traverseProperty(property, modelEntityList);
+  const root = traverseProperty(rootProperty, modelEntityList);
   modelEntityList.unshift(root);
   return modelEntityList;
 };
@@ -31,11 +31,17 @@ const parse = (jsonCode: string | object): Entity[] => {
  * @param property
  * @param modelEntityList
  */
-const traverseProperty = (property: Property, modelEntityList: Entity[]): Entity => {
-  property.properties.forEach(item => {
-    if (item.type === "object" || item.type === "array") {
+const traverseProperty = (property: RootProperty, modelEntityList: Entity[]): Entity => {
+  property.properties.forEach((item: Property) => {
+    if (isObjectProperty(item)) {
       item.entity = traverseProperty(item, modelEntityList);
       modelEntityList.push(item.entity);
+    } else if (isArrayProperty(item)) {
+      const childProperty = item.childProperty;
+      if (isObjectProperty(childProperty)) {
+        childProperty.entity = traverseProperty(childProperty, modelEntityList);
+        modelEntityList.push(childProperty.entity);
+      }
     }
   });
   const { key, type, properties } = property;
@@ -58,16 +64,22 @@ const traverseProperty = (property: Property, modelEntityList: Entity[]): Entity
 const transformCode = (list: Entity[], options: Options) => {
   let code = "";
   list.forEach(entity => {
-    code += (options.before?.({ entity }) || "");
+    code += (options.before?.(entity) || "");
     entity.properties.forEach(property => {
       const fn = options[property.type];
-      if (fn) {
-        code += fn({ property, entity: property.entity! });
-      } else {
-        code += options.default({ property, entity: property.entity! });
+      if (!fn) {
+        code += options["default"](property, entity);
+        return;
+      }
+      if (isObjectProperty(property)) {
+        code += options["object"]?.(property, entity);
+      } else if (isArrayProperty(property)) {
+        code += options["array"]?.(property, entity);
+      } else if (isNormalProperty(property)) {
+        code += options[property.type]?.(property as any, entity);
       }
     });
-    code += (options.after?.({ entity }) || "");
+    code += (options.after?.(entity) || "");
   });
   return code;
 };

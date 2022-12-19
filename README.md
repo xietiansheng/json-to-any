@@ -7,7 +7,7 @@ npm install json-to-any --save
 ```
 
 ## 使用
-> 请参考 `/example` 文件夹下js演示代码
+> 请参考 [`example`](https://gitee.com/XieTS/json-to-any/tree/master/example) 文件夹下js演示代码
 ```ts
 import { parse } from "json-to-any";
 
