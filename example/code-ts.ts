@@ -3,17 +3,16 @@ import { isObjectProperty } from "../src/type/property";
 
 const jsonStr = {
   name: "json-to-any-web",
-  content: [123123, "123123", { s: "123" }],
-  content2: [
-    { name: "再说" },
-    { age: 19, memo: { value: "备注" } }
-  ],
-  car: {
-    brand: "BMW",
-    event: {
-      name: "click"
+  events: [
+    {
+      id: "19291388123",
+      name: "click",
+    },
+    {
+      age: 19
     }
-  }
+  ],
+  content: ["123123"],
 };
 const jsonToTs = (json: string) => {
   const entities = JsonToAny.parse(json);

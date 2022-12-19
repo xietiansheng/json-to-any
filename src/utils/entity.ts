@@ -25,10 +25,7 @@ export const parseJsonToProperty = (target: Record<any, any>): RootProperty => {
         };
       }
       if (type === "array" && value.length) {
-        return handleArrayType({
-          key,
-          value,
-        });
+        return handleArrayType({ key, value, });
       }
       return {
         key,
@@ -55,13 +52,16 @@ function handleArrayType({ key, value }: { key: string, value: any }): ArrayProp
     // 处理对象类型，多个对象会合并所有属性
     childProperty.type = "object";
     // 单个对象直接返回
+    let properties: Property[];
     if (value.length === 1) {
       childProperty.value = value[0];
+      properties = parseJsonToProperty(value[0]).properties;
     } else {
       const mergeObject = value.reduce((pre: Record<any, any>, item: Record<any, any>) => Object.assign(pre, item), {});
       childProperty.value = mergeObject;
-      (<ObjectProperty>childProperty).properties = parseJsonToProperty(mergeObject).properties;
+      properties = parseJsonToProperty(mergeObject).properties;
     }
+    (<ObjectProperty>childProperty).properties = properties;
   } else {
     // 其他类型不作处理
     childProperty.type = childType;

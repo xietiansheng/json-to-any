@@ -18,10 +18,25 @@ const parse = (jsonCode: string | object): Entity[] => {
   if (isNull(jsonCode)) {
     throw Error("The Value cannot be null.");
   }
-  const target = isObject(jsonCode) ? jsonCode : parseJsonToObject(jsonCode);
-  const rootProperty = parseJsonToProperty(target);
+  let target;
+  try {
+    target = isObject(jsonCode) ? jsonCode : parseJsonToObject(jsonCode);
+  } catch (e) {
+    throw Error("parse json to object error;" + e);
+  }
+  let rootProperty;
+  try {
+    rootProperty = parseJsonToProperty(target);
+  } catch (e) {
+    throw Error("parse json to property error;" + e);
+  }
   const modelEntityList: Entity[] = [];
-  const root = traverseProperty(rootProperty, modelEntityList);
+  let root;
+  try {
+    root = traverseProperty(rootProperty, modelEntityList);
+  } catch (e) {
+    throw Error("traverse property error;" + e);
+  }
   modelEntityList.unshift(root);
   return modelEntityList;
 };
