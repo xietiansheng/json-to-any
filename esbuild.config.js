@@ -4,6 +4,7 @@ const build = () => require("esbuild").build({
   bundle: true,
   format: "cjs",
   minify: true,
+  sourcemap: "inline"
 });
 
 build();
