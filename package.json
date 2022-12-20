@@ -1,6 +1,6 @@
 {
   "name": "json-to-any",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "json转换任意语言代码",
   "main": "./dist/index.js",
   "files": [
@@ -15,7 +15,8 @@
     "json",
     "json-to",
     "json-to-any",
-    "JsonToAny"
+    "JsonToAny",
+    "json-to-ts"
   ],
   "homepage": "https://gitee.com/XieTS/json-to-any",
   "bugs": {

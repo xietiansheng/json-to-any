@@ -2,18 +2,12 @@ import JsonToAny from "../dist";
 import { isObjectProperty } from "../src/type/property";
 
 const jsonStr = {
-  name: "json-to-any-web",
-  events: [
-    {
-      id: "19291388123",
-      name: "click",
-    },
-    {
-      age: 19
-    }
-  ],
-  content: ["123123"],
-};
+  "id": "1539522860300640256",
+  "name": "住院医嘱新开表单【分类-卫材】",
+  "lineBarPosition": "top",
+  "content":[],
+  "resetButtonShow": false
+}
 const jsonToTs = (json: string) => {
   const entities = JsonToAny.parse(json);
   const transformPropertyCode = (content: string) => `  ${ content };\n`;

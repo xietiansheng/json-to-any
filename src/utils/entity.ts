@@ -24,7 +24,7 @@ export const parseJsonToProperty = (target: Record<any, any>): RootProperty => {
           properties: parseJsonToProperty(value).properties,
         };
       }
-      if (type === "array" && value.length) {
+      if (type === "array") {
         return handleArrayType({ key, value, });
       }
       return {
@@ -45,7 +45,7 @@ function handleArrayType({ key, value }: { key: string, value: any }): ArrayProp
     value: "",
     type: "null",
   };
-  // 联合类型，做any处理
+  // 联合类型，或者没有数据，做any处理
   if (childrenTypes.size !== 1) {
     childProperty.type = "null";
   } else if (childType === "object") {
@@ -66,12 +66,10 @@ function handleArrayType({ key, value }: { key: string, value: any }): ArrayProp
     // 其他类型不作处理
     childProperty.type = childType;
   }
-
   return {
     key,
     value,
     type: "array",
     childProperty,
   };
-
 }
