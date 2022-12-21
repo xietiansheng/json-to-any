@@ -1,6 +1,6 @@
 {
   "name": "json-to-any",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "json转换任意语言代码",
   "main": "./dist/index.js",
   "files": [

@@ -1,4 +1,4 @@
-import JsonToAny from "../dist";
+import { parse,transformCode } from "../dist";
 import { isObjectProperty } from "../src/type/property";
 
 const jsonStr = {
@@ -14,9 +14,9 @@ const jsonStr = {
   "resetButtonShow": false
 };
 const jsonToTs = (json: string | Record<any, any>) => {
-  const entities = JsonToAny.parse(json);
+  const entities = parse(json);
   const strToTsCode = (content: string) => `  ${ content };\n`;
-  return JsonToAny.transformCode(entities, {
+  return transformCode(entities, {
     before({ entity }) {
       return `\ninterface ${ transformName(entity.key, {
         firstChatUpperCase: true

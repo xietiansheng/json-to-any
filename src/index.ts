@@ -14,7 +14,34 @@ const parseJsonToObject = (jsonCode: string): Record<any, any> => {
   return result;
 };
 
-const parse = (jsonCode: string | object): Entity[] => {
+/**
+ * 递归处理所有实体类
+ * @param property
+ * @param modelEntityList
+ */
+const _traverseProperty = (property: RootProperty, modelEntityList: Entity[]): Entity => {
+  property.properties.forEach((item: Property) => {
+    if (isObjectProperty(item)) {
+      item.entity = _traverseProperty(item, modelEntityList);
+      modelEntityList.push(item.entity);
+    } else if (isArrayProperty(item)) {
+      const childProperty = item.childProperty;
+      if (isObjectProperty(childProperty)) {
+        childProperty.entity = _traverseProperty(childProperty, modelEntityList);
+        modelEntityList.push(childProperty.entity);
+      }
+    }
+  });
+  const { key, type, properties } = property;
+  return {
+    key,
+    type,
+    properties,
+    parent: { key, type },
+  };
+};
+
+export const parse = (jsonCode: string | object): Entity[] => {
   if (isNull(jsonCode)) {
     throw Error("The Value cannot be null.");
   }
@@ -33,7 +60,7 @@ const parse = (jsonCode: string | object): Entity[] => {
   const modelEntityList: Entity[] = [];
   let root;
   try {
-    root = traverseProperty(rootProperty, modelEntityList);
+    root = _traverseProperty(rootProperty, modelEntityList);
   } catch (e) {
     throw Error("traverse property error;" + e);
   }
@@ -42,38 +69,11 @@ const parse = (jsonCode: string | object): Entity[] => {
 };
 
 /**
- * 递归处理所有实体类
- * @param property
- * @param modelEntityList
- */
-const traverseProperty = (property: RootProperty, modelEntityList: Entity[]): Entity => {
-  property.properties.forEach((item: Property) => {
-    if (isObjectProperty(item)) {
-      item.entity = traverseProperty(item, modelEntityList);
-      modelEntityList.push(item.entity);
-    } else if (isArrayProperty(item)) {
-      const childProperty = item.childProperty;
-      if (isObjectProperty(childProperty)) {
-        childProperty.entity = traverseProperty(childProperty, modelEntityList);
-        modelEntityList.push(childProperty.entity);
-      }
-    }
-  });
-  const { key, type, properties } = property;
-  return {
-    key,
-    type,
-    properties,
-    parent: { key, type },
-  };
-};
-
-/**
  * 代码生成
  * @param list 请使用parse转换json为可用EntityModel数组
  * @param options 代码实现
  */
-const transformCode: TransformCode = (list: Entity[], options: Options) => {
+export const transformCode: TransformCode = (list: Entity[], options: Options) => {
   let code = "";
   list.forEach(entity => {
     code += (options.before?.({ entity }) || "");
@@ -95,10 +95,3 @@ const transformCode: TransformCode = (list: Entity[], options: Options) => {
   });
   return code;
 };
-
-export default {
-  parse,
-  transformCode,
-};
-
-
