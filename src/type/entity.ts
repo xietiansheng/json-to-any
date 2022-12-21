@@ -5,7 +5,6 @@ export interface Entity {
   key: string;
   type: PropertyType;
   properties: Property[];
-  modelName?: string;
   // 合并源
   parent?: {
     key: string;

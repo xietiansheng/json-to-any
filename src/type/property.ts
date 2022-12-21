@@ -2,7 +2,7 @@ import { Entity } from "./entity";
 
 export type PropertyType = "object" | "array" | "boolean" | "string" | "number" | "null";
 
-export type Property = NormalProperty | ArrayProperty
+export type Property = NormalProperty | ArrayProperty | ObjectProperty
 export const isNormalProperty = (val: Property): val is NormalProperty => !isObjectProperty(val) && !isArrayProperty(val);
 export const isArrayProperty = (val: Property): val is ArrayProperty => val.type === "array";
 export const isObjectProperty = (val: Property): val is ObjectProperty => val.type === "object";

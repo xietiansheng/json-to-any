@@ -1,8 +1,8 @@
-import { firstChatToUpperCase, isNull, isObject } from "./utils/shared";
+import { isNull, isObject } from "./utils/shared";
 import { parseJsonToProperty } from "./utils/entity";
 import { Entity } from "./type/entity";
 import { isArrayProperty, isNormalProperty, isObjectProperty, Property, RootProperty } from "./type/property";
-import { Options } from "./type/transform";
+import { Options, TransformCode } from "./type/transform";
 
 const parseJsonToObject = (jsonCode: string): Record<any, any> => {
   let result = {};
@@ -65,9 +65,6 @@ const traverseProperty = (property: RootProperty, modelEntityList: Entity[]): En
     type,
     properties,
     parent: { key, type },
-    get modelName() {
-      return firstChatToUpperCase(this.key);
-    }
   };
 };
 
@@ -76,25 +73,25 @@ const traverseProperty = (property: RootProperty, modelEntityList: Entity[]): En
  * @param list 请使用parse转换json为可用EntityModel数组
  * @param options 代码实现
  */
-const transformCode = (list: Entity[], options: Options) => {
+const transformCode: TransformCode = (list: Entity[], options: Options) => {
   let code = "";
   list.forEach(entity => {
-    code += (options.before?.(entity) || "");
+    code += (options.before?.({ entity }) || "");
     entity.properties.forEach(property => {
       const fn = options[property.type];
       if (!fn) {
-        code += options["default"](property, entity);
+        code += options["default"]({ property, entity });
         return;
       }
       if (isObjectProperty(property)) {
-        code += options["object"]?.(property, entity);
+        code += options["object"]?.({ property, entity, });
       } else if (isArrayProperty(property)) {
-        code += options["array"]?.(property, entity);
+        code += options["array"]?.({ property, entity, });
       } else if (isNormalProperty(property)) {
-        code += options[property.type]?.(property as any, entity);
+        code += options[property.type]?.({ property: property as any, entity });
       }
     });
-    code += (options.after?.(entity) || "");
+    code += (options.after?.({ entity, }) || "");
   });
   return code;
 };

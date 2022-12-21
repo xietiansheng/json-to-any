@@ -5,41 +5,83 @@ const jsonStr = {
   "id": "1539522860300640256",
   "name": "住院医嘱新开表单【分类-卫材】",
   "lineBarPosition": "top",
-  "content":[],
+  "content": [{
+    name: "测试"
+  }],
+  "user_info": {
+    brand: "BMW",
+  },
   "resetButtonShow": false
-}
-const jsonToTs = (json: string) => {
+};
+const jsonToTs = (json: string | Record<any, any>) => {
   const entities = JsonToAny.parse(json);
-  const transformPropertyCode = (content: string) => `  ${ content };\n`;
+  const strToTsCode = (content: string) => `  ${ content };\n`;
   return JsonToAny.transformCode(entities, {
-    before(entity) {
-      return `\ninterface ${ entity.modelName } {\n`;
+    before({ entity }) {
+      return `\ninterface ${ transformName(entity.key, {
+        firstChatUpperCase: true
+      }) } {\n`;
     },
-    default(property) {
+    default({ property }) {
       // key: value;
-      return transformPropertyCode(`${ property.key }: ${ property?.type }`);
+      return strToTsCode(`${ property.key }: ${ property?.type }`);
     },
-    object(property) {
+    object({ property }) {
       // key: Model;
-      return transformPropertyCode(`${ property.key }: ${ property.entity.modelName }`);
+      return strToTsCode(`${ transformName(property.key) }: ${ transformName(property.entity.key, {
+        firstChatUpperCase: true
+      }) }`);
     },
-    array(property) {
+    array({ property }) {
       const childProperty = property.childProperty;
       if (isObjectProperty(childProperty)) {
-        return transformPropertyCode(`${ property.key }: ${ childProperty.entity.modelName }[]`);
+        return strToTsCode(`${ property.key }: ${ transformName(property.childProperty.key, {
+          firstChatUpperCase: true
+        }) }[]`);
       }
       if (childProperty.type === "null") {
-        return transformPropertyCode(`${ property.key }?: any[]`);
+        return strToTsCode(`${ property.key }?: any[]`);
       }
-      return transformPropertyCode(`${ property.key }: ${ childProperty.type }[]`);
+      return strToTsCode(`${ property.key }: ${ childProperty.type }[]`);
     },
-    null(property) {
+    null({ property }) {
       // key?: any;
-      return transformPropertyCode(`${ property.key }?: any`);
+      return strToTsCode(`${ property.key }?: any`);
     },
     after() {
       return "}";
     },
   });
 };
-console.log(jsonToTs(JSON.stringify(jsonStr)), "tsCode");
+/**
+ * 属性名，实体名的统一处理
+ * @param name
+ * @param options
+ * @param options.firstChatUpperCase 首字母是否需要大写
+ */
+const transformName = (name: string, options?: {
+  firstChatUpperCase: boolean
+}): string => {
+  if (!name) {
+    return name;
+  }
+  if (name.includes("_")) {
+    name = transformUnderlineName(name);
+  }
+  return options?.firstChatUpperCase ? firstChatToUpperCase(name) : name;
+};
+export const firstChatToUpperCase = (val: string) => (val && val[0].toUpperCase() + val.slice(1, val.length)) || "";
+/**
+ *  下划线的处理
+ *  order_id ==> orderId
+ */
+const transformUnderlineName = (name: string) => {
+  return name.split("_").reduce((pre, item, index) => {
+    let res = item;
+    if (index !== 0) {
+      res = firstChatToUpperCase(item);
+    }
+    return pre + res;
+  }, "");
+};
+console.log(jsonToTs(jsonStr), "jsonToTs(jsonStr)");

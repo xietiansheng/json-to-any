@@ -1,17 +1,20 @@
 import { ArrayProperty, NormalProperty, ObjectProperty, Property } from "./property";
 import { Entity } from "./entity";
 
+type TransformOptions<P, > = (params: { property: P, entity: Entity, }) => string
+
 export interface Options {
-  before?: transformCodeEntityFn;
-  after?: transformCodeEntityFn;
-  default: (property: Property, entity: Entity) => string;
+  before?: TransformCodeEntityFn;
+  after?: TransformCodeEntityFn;
+  default: TransformOptions<Property>;
   // 数据类型
-  array?: (property: ArrayProperty, entity: Entity) => string;
-  object?: (property: ObjectProperty, entity: Entity) => string;
-  string?: (property: NormalProperty, entity: Entity) => string;
-  boolean?: (property: NormalProperty, entity: Entity) => string;
-  number?: (property: NormalProperty, entity: Entity) => string;
-  null?: (property: NormalProperty, entity: Entity) => string;
+  array?: TransformOptions<ArrayProperty>;
+  object?: TransformOptions<ObjectProperty>;
+  string?: TransformOptions<NormalProperty>;
+  boolean?: TransformOptions<NormalProperty>;
+  number?: TransformOptions<NormalProperty>;
+  null?: TransformOptions<NormalProperty>;
 }
 
-export type transformCodeEntityFn = (entity: Entity) => string;
+export type TransformCode = (list: Entity[], options: Options,) => string;
+export type TransformCodeEntityFn = (params: { entity: Entity }) => string;
