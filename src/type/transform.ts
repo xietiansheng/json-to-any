@@ -1,7 +1,7 @@
 import { ArrayProperty, NormalProperty, ObjectProperty, Property } from "./property";
 import { Entity } from "./entity";
 
-type TransformOptions<P, > = (params: { property: P, entity: Entity, }) => string
+type TransformOptions<P, > = (params: { property: P, entity: Entity, }) => string | string[]
 
 export interface Options {
   before?: TransformCodeEntityFn;
@@ -16,5 +16,5 @@ export interface Options {
   null?: TransformOptions<NormalProperty>;
 }
 
-export type TransformCode = (list: Entity[], options: Options,) => string;
-export type TransformCodeEntityFn = (params: { entity: Entity }) => string;
+export type TransformCode = (list: Entity[], options: Options,) => string | string[];
+export type TransformCodeEntityFn = (params: { entity: Entity }) => string | string[];

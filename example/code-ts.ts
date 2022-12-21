@@ -1,4 +1,4 @@
-import { parse,transformCode } from "../dist";
+import { parse, transformCode } from "../dist";
 import { isObjectProperty } from "../src/type/property";
 
 const jsonStr = {
@@ -24,13 +24,13 @@ const jsonToTs = (json: string | Record<any, any>) => {
     },
     default({ property }) {
       // key: value;
-      return strToTsCode(`${ property.key }: ${ property?.type }`);
+      return [strToTsCode(`${ property.key }: ${ property?.type }`)];
     },
     object({ property }) {
       // key: Model;
-      return strToTsCode(`${ transformName(property.key) }: ${ transformName(property.entity.key, {
+      return [strToTsCode(`${ transformName(property.key) }: ${ transformName(property.entity.key, {
         firstChatUpperCase: true
-      }) }`);
+      }) }`)];
     },
     array({ property }) {
       const childProperty = property.childProperty;
@@ -49,7 +49,7 @@ const jsonToTs = (json: string | Record<any, any>) => {
       return strToTsCode(`${ property.key }?: any`);
     },
     after() {
-      return "}";
+      return ["}"];
     },
   });
 };
@@ -84,4 +84,4 @@ const transformUnderlineName = (name: string) => {
     return pre + res;
   }, "");
 };
-console.log(jsonToTs(jsonStr), "jsonToTs(jsonStr)");
+console.log(jsonToTs(jsonStr));

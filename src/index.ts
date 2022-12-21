@@ -75,23 +75,49 @@ export const parse = (jsonCode: string | object): Entity[] => {
  */
 export const transformCode: TransformCode = (list: Entity[], options: Options) => {
   let code = "";
+  let curRound = 0;
+  let newLength = true;
+  const getCurRoundData = (codeRes: string | string[] | undefined): string => {
+    let codeList = [];
+    if (!Array.isArray(codeRes)) {
+      codeList.push(codeRes || "");
+    } else {
+      codeList = [...codeRes];
+    }
+    let res = "";
+    if (codeList.length > curRound + 1) {
+      res = codeList[curRound];
+      newLength = true;
+    } else if (codeList.length === curRound + 1) {
+      res = codeList[curRound];
+    }
+    return res;
+  };
   list.forEach(entity => {
-    code += (options.before?.({ entity }) || "");
-    entity.properties.forEach(property => {
-      const fn = options[property.type];
-      if (!fn) {
-        code += options["default"]({ property, entity });
-        return;
+    // 将上一轮循环拿到的最大数值继续拿来循环
+    code += options.before?.({ entity }) || "";
+    do {
+      newLength = false;
+      entity.properties.forEach(property => {
+        const fn = options[property.type];
+        if (!fn) {
+          code += getCurRoundData(options["default"]({ property, entity }));
+          return;
+        }
+        // code += getCurRoundData(fn?.({ property: property as any, entity }));
+        if (isObjectProperty(property)) {
+          code += getCurRoundData(options["object"]?.({ property, entity }));
+        } else if (isArrayProperty(property)) {
+          code += getCurRoundData(options["array"]?.({ property, entity }));
+        } else if (isNormalProperty(property)) {
+          code += getCurRoundData(options[property.type]?.({ property: property as any, entity }));
+        }
+      });
+      if (newLength) {
+        curRound++;
       }
-      if (isObjectProperty(property)) {
-        code += options["object"]?.({ property, entity, });
-      } else if (isArrayProperty(property)) {
-        code += options["array"]?.({ property, entity, });
-      } else if (isNormalProperty(property)) {
-        code += options[property.type]?.({ property: property as any, entity });
-      }
-    });
-    code += (options.after?.({ entity, }) || "");
+    } while (newLength);
+    code += options.after?.({ entity }) || "";
   });
   return code;
 };
