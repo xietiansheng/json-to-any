@@ -3,15 +3,15 @@ import { isObjectProperty } from "../src/type/property";
 
 const jsonStr = {
   "id": "1539522860300640256",
-  "name": "住院医嘱新开表单【分类-卫材】",
-  "lineBarPosition": "top",
-  "content": [{
-    name: "测试"
-  }],
+  // "name": "住院医嘱新开表单【分类-卫材】",
+  // "lineBarPosition": "top",
+  // "content": [{
+  //   name: "测试"
+  // }],
   "user_info": {
     brand: "BMW",
   },
-  "resetButtonShow": false
+  // "resetButtonShow": false
 };
 const jsonToTs = (json: string | Record<any, any>) => {
   const entities = parse(json);

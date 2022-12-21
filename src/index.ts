@@ -96,6 +96,7 @@ export const transformCode: TransformCode = (list: Entity[], options: Options) =
   list.forEach(entity => {
     // 将上一轮循环拿到的最大数值继续拿来循环
     code += options.before?.({ entity }) || "";
+    curRound = 0;
     do {
       newLength = false;
       entity.properties.forEach(property => {
