@@ -1,0 +1,17 @@
+{
+  "id": "1539522860300640256",
+  "name": "住院医嘱新开表单【分类-卫材】",
+  "lineBarPosition": "top",
+  "content": [
+    {
+      "name": "测试"
+    }
+  ],
+  "user_info": {
+    "brand": "BMW",
+    "parent": {
+      "name": "测试"
+    }
+  },
+  "resetButtonShow": false
+}

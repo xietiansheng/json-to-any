@@ -6,6 +6,8 @@ type TransformOptions<P, > = (params: { property: P, entity: Entity, }) => strin
 export interface Options {
   before?: TransformCodeEntityFn;
   after?: TransformCodeEntityFn;
+  childAfter?: TransformCodeEntityFn;
+  childBefore?: TransformCodeEntityFn;
   default: TransformOptions<Property>;
   // 数据类型
   array?: TransformOptions<ArrayProperty>;

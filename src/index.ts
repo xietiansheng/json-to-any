@@ -1,7 +1,14 @@
 import { isNull, isObject } from "./utils/shared";
 import { parseJsonToProperty } from "./utils/entity";
 import { Entity } from "./type/entity";
-import { isArrayProperty, isNormalProperty, isObjectProperty, Property, RootProperty } from "./type/property";
+import {
+  isArrayProperty,
+  isNormalProperty,
+  isObjectProperty,
+  ObjectProperty,
+  Property,
+  RootProperty
+} from "./type/property";
 import { Options, TransformCode } from "./type/transform";
 
 const parseJsonToObject = (jsonCode: string): Record<any, any> => {
@@ -20,15 +27,17 @@ const parseJsonToObject = (jsonCode: string): Record<any, any> => {
  * @param modelEntityList
  */
 const _traverseProperty = (property: RootProperty, modelEntityList: Entity[]): Entity => {
+  const appendEntity = (itemProperty: ObjectProperty) => {
+    itemProperty.entity = _traverseProperty(itemProperty, modelEntityList);
+    modelEntityList.push(itemProperty.entity);
+  };
   property.properties.forEach((item: Property) => {
     if (isObjectProperty(item)) {
-      item.entity = _traverseProperty(item, modelEntityList);
-      modelEntityList.push(item.entity);
+      appendEntity(item);
     } else if (isArrayProperty(item)) {
       const childProperty = item.childProperty;
       if (isObjectProperty(childProperty)) {
-        childProperty.entity = _traverseProperty(childProperty, modelEntityList);
-        modelEntityList.push(childProperty.entity);
+        appendEntity(childProperty);
       }
     }
   });
@@ -40,7 +49,6 @@ const _traverseProperty = (property: RootProperty, modelEntityList: Entity[]): E
     parent: { key, type },
   };
 };
-
 export const parse = (jsonCode: string | object): Entity[] => {
   if (isNull(jsonCode)) {
     throw Error("The Value cannot be null.");
@@ -99,13 +107,13 @@ export const transformCode: TransformCode = (list: Entity[], options: Options) =
     curRound = 0;
     do {
       newLength = false;
+      code += getCurRoundData(options["childBefore"]?.({ entity }));
       entity.properties.forEach(property => {
         const fn = options[property.type];
         if (!fn) {
           code += getCurRoundData(options["default"]({ property, entity }));
           return;
         }
-        // code += getCurRoundData(fn?.({ property: property as any, entity }));
         if (isObjectProperty(property)) {
           code += getCurRoundData(options["object"]?.({ property, entity }));
         } else if (isArrayProperty(property)) {
@@ -114,6 +122,7 @@ export const transformCode: TransformCode = (list: Entity[], options: Options) =
           code += getCurRoundData(options[property.type]?.({ property: property as any, entity }));
         }
       });
+      code += getCurRoundData(options["childAfter"]?.({ entity }));
       if (newLength) {
         curRound++;
       }

@@ -1,6 +1,6 @@
 {
   "name": "json-to-any",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "json转换任意语言代码",
   "main": "./dist/index.js",
   "files": [
@@ -8,9 +8,10 @@
     "README.md"
   ],
   "scripts": {
-    "test:ts": "npm run build && tsc ./example/code-ts.ts && node ./example/code-ts.js",
-    "test:java": "npm run build && tsc ./example/code-java.ts && node ./example/code-java.js",
-    "build": "tsc && node esbuild.config.js"
+    "build": "tsc && node esbuild.config.js",
+    "build:example": "npm run build && node example/example-build.config.js",
+    "test:ts": "npm run build:example && node example/dist/code-ts.js",
+    "test:java": "npm run build:example && node example/dist/code-java.js"
   },
   "keywords": [
     "json",
